@@ -58,8 +58,9 @@ This plugin has **no external dependencies**.
 - No package manager, installer, or build system is used.
 - No bundled binaries or executables are shipped — the repository contains
   only a `manifest.json`, one QML file, and documentation.
-- No `sudo` or `pkexec` is used or required, and the plugin needs no root
-  privileges. It runs as your normal user inside `omarchy-shell`.
+- The plugin performs no privileged operations and requires no elevated
+  access. It runs as your normal user inside `omarchy-shell`, alongside every
+  other bar widget.
 - No network access, no background services, and no writes outside the
   plugin folder.
 
