@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
+### Security
+
+- The off-screen `Text` item used to measure the label's natural width now
+  sets `textFormat: Text.PlainText`, matching the visible label.
+
+  Window titles are attacker-controlled: any application can set its own
+  title. That measurement item previously used Qt's default
+  `Text.AutoText`, so a title containing an image tag was parsed as rich
+  text and handed to Qt's rich-text layout while `implicitWidth` was being
+  computed, which can trigger a fetch of a remote resource. A title such as
+  `<img src="https://example.invalid/track.png">` would therefore cause the
+  shell to issue an outbound request, disclosing the user's IP address and
+  confirming that a particular application is running. With `PlainText` the
+  title is treated as literal text and no markup is interpreted.
+
+  Reported by a marketplace maintainer during submission review.
+
 ### Added
 
 - Bar widget showing the focused window's app icon, app name, and title as

@@ -56,9 +56,14 @@ BarWidget {
   implicitWidth: visible ? Style.space(4) + (appIcon.status === Image.Ready ? iconSize + Style.space(6) : 0) + Math.min(maxLabelWidth, measureText.implicitWidth) + Style.space(8) : 0
   implicitHeight: barSize
 
+  // Off-screen copy of the label used only to measure its natural width.
+  // Must stay PlainText: the window title is untrusted, and Text.AutoText
+  // would let a title such as `<img src="https://...">` reach Qt's rich-text
+  // layout while implicitWidth is computed, fetching a remote resource.
   Text {
     id: measureText
     visible: false
+    textFormat: Text.PlainText
     text: root.displayText
     font.family: root.bar ? root.bar.fontFamily : Style.font.family
     font.pixelSize: Style.font.body

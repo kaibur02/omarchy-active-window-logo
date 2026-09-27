@@ -94,6 +94,23 @@ This plugin has **no external dependencies**.
 Everything it uses (`Quickshell`, `ToplevelManager`, `DesktopEntries`,
 `Color`, `Style`) already ships with Omarchy.
 
+## Security
+
+Window titles are untrusted input — any application chooses its own title, so
+this plugin treats them as literal text only.
+
+- Every `Text` item that receives window data sets
+  `textFormat: Text.PlainText`, including the off-screen item used to measure
+  the label width. Qt's default `Text.AutoText` would otherwise parse a title
+  as rich text, so a title containing an image tag could make the shell fetch
+  a remote resource while computing the label width.
+- Icons are resolved through `Quickshell.iconPath`, which returns an
+  `image://icon/...` provider URL. An application-supplied `appId` is looked
+  up as a theme icon name and never fetched as a URL.
+- No shell commands, no subprocesses, no file writes, no network access.
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
+
 ## Details
 
 - Pure QML + manifest. The whole widget is one declarative file with no
