@@ -1,16 +1,47 @@
 # Active Window Logo
 
-A minimal bar widget for [Omarchy](https://omarchy.org) that shows the
-currently focused window — its app icon and title — right in the bar.
-
 ![Active Window Logo in the Omarchy bar](preview.png)
 
-- **App icon + name + window title** in a single, theme-matched label.
-- **Click** to focus the window, **middle-click** or **right-click** to close it.
-- Hides itself when there is no active window and in vertical bars.
-- Resolves real app names and icons from `.desktop` entries, with a sane fallback.
-- Fully theme-reactive: colors, fonts, and spacing come from Omarchy's
-  `Color` / `Style` singletons, so theme switches restyle it live.
+A bar widget for [Omarchy](https://omarchy.org) that shows the focused window —
+its **app icon, app name, and window title** — right in the bar.
+
+![The widget updating live as the focused window changes](demo.gif)
+
+<sub>The animation is a real screen recording of the widget reacting to focus
+changes on an Omarchy desktop. Long titles elide automatically.</sub>
+
+## Why
+
+Omarchy already ships a built-in `omarchy.active-window` widget that shows the
+raw window title. This plugin is a small, drop-in upgrade over it:
+
+|                              | Built-in `omarchy.active-window` | Active Window Logo |
+| ---------------------------- | -------------------------------- | ------------------ |
+| App icon                     | –                                | ✅                 |
+| App name from `.desktop`     | –                                | ✅                 |
+| Collapses redundant titles   | –                                | ✅                 |
+| Hover tooltip                | Title only                       | App name + title   |
+| Long-title eliding           | ✅                               | ✅                 |
+| Configurable `maxWidth`      | ✅                               | ✅                 |
+| Click to focus / close       | ✅                               | ✅                 |
+
+The app name matters most when several windows share a generic title. Two
+terminals both titled `~` or two files both called `Work` become
+`Kitty | ~` and `Files | Work`, so you can tell them apart at a glance
+instead of guessing from the title alone.
+
+## Features
+
+- **Icon + name + title** in one theme-matched label.
+- **Left-click** focuses the window, **middle-click** or **right-click** closes it.
+- Resolves real app names and icons from `.desktop` entries via
+  `DesktopEntries`, with a generic icon fallback so it never renders broken.
+- Elides long titles and **collapses duplicates** — if the title already
+  matches the app name, it shows the name only.
+- Hides itself when nothing is focused and in vertical bars, so it never
+  leaves an empty gap.
+- Fully theme-reactive: every colour, font, and spacing value comes from
+  Omarchy's `Color` / `Style` singletons, so theme switches restyle it live.
 
 ## Install
 
@@ -18,21 +49,17 @@ currently focused window — its app icon and title — right in the bar.
 omarchy plugin add https://github.com/kaibur02/omarchy-active-window-logo.git --enable
 ```
 
-```sh
-omarchy plugin add https://github.com/kaibur02/omarchy-active-window-logo.git --enable
-```
-
 ## Usage
 
-The widget appears automatically in the bar once installed (default section:
-`left`). It shows the focused window as `App Name | Window Title`.
+The widget is added to the bar's `left` section by default and shows the
+focused window as `App Name | Window Title`.
 
-- **Left-click** the widget to bring the focused window to the front.
-- **Middle-click** or **right-click** to close the focused window.
-- Hover to see a tooltip with the full app name and title.
-
-The label automatically shortens and elides when the window title is long,
-so it never crowds out the rest of your bar.
+| Input            | Action                    |
+| ---------------- | ------------------------- |
+| Left-click       | Focus the window          |
+| Middle-click     | Close the window          |
+| Right-click      | Close the window          |
+| Hover            | Tooltip with name + title |
 
 ## Configure
 
@@ -69,16 +96,16 @@ Everything it uses (`Quickshell`, `ToplevelManager`, `DesktopEntries`,
 
 ## Details
 
-- Pure QML + manifest — no install hooks, no daemons, no network calls,
-  no background writes.
+- Pure QML + manifest. The whole widget is one declarative file with no
+  imperative logic, timers, or state machine.
 - Runs entirely inside `omarchy-shell` as an unsandboxed QML plugin with
   standard user permissions (the norm for Omarchy plugins).
-- Reads only the active window's `appId`/`title` and resolves icons via
+- Reads only the focused window's `appId` and `title`, and resolves icons via
   `DesktopEntries` and `Quickshell.iconPath`. That is the entire data surface.
-- The widget manages windows only in response to your own clicks; it never
-  acts on its own.
-- Installation only clones this repository and adds the plugin ID to your
-  own `~/.config/omarchy/shell.json`. It never overwrites existing user
+- Window management happens only in response to your own clicks; the widget
+  never acts on its own.
+- Installing only clones this repository and adds the plugin ID to your own
+  `~/.config/omarchy/shell.json`. It never overwrites existing user
   configuration, and `omarchy plugin remove` undoes it.
 
 ## Compatibility
@@ -88,17 +115,20 @@ Everything it uses (`Quickshell`, `ToplevelManager`, `DesktopEntries`,
 - Uses the Quickshell/Wayland APIs and the Omarchy QML modules
   (`BarWidget`, `ToplevelManager`, `DesktopEntries`, `Style`), targeting
   plugin `schemaVersion: 1`.
-- Testable without installing with `omarchy plugin validate <repo-dir>`.
+- Works alongside the built-in `omarchy.active-window` if you enable both.
+- You can check the plugin without installing it:
+  `omarchy plugin validate <repo-dir>`
 
 ## Files
 
 | File            | What                          |
-|-----------------|-------------------------------|
+| --------------- | ----------------------------- |
 | `manifest.json` | Omarchy plugin manifest       |
 | `Widget.qml`    | Bar widget (icon + title)     |
 | `preview.png`   | Marketplace preview screenshot |
+| `demo.gif`      | Live demo of the widget       |
 | `LICENSE`       | MIT license                   |
-| `README.md`     | This document                 |
+| `CHANGELOG.md`  | Release history               |
 
 ## License
 
