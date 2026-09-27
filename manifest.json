@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "io.github.kaibur02.omarchy-active-window-logo",
+  "name": "Active Window Logo",
+  "version": "1.0.0",
+  "author": "kaibur02",
+  "license": "MIT",
+  "description": "Shows the focused window's app icon and title in the bar, with a clickable icon to activate it.",
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "Widget.qml"
+  },
+  "barWidget": {
+    "displayName": "Active Window Logo",
+    "description": "Shows the focused window's app icon and title. Click to focus, middle/right-click to close.",
+    "category": "Compositor",
+    "allowMultiple": false,
+    "defaultSection": "left",
+    "defaults": {
+      "maxWidth": 260
+    }
+  }
+}

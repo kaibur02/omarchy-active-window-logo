@@ -1,0 +1,20 @@
+# QML / Qt build artifacts
+*.qmlc
+qmlcache
+*.jsc
+*.qmlc
+.moc/
+*.moc
+
+# Omarchy runtime files (written at runtime, not part of the plugin)
+shell.json
+shell.json.bak
+shell.json.bak.*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*~
+*.swp
+.idea/
+.vscode/
