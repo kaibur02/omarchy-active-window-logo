@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.Commons
@@ -12,8 +13,31 @@ BarWidget {
   id: root
   moduleName: "io.github.kaibur02.omarchy-active-window-logo"
 
-  // The currently focused Wayland toplevel (window).
-  readonly property var toplevel: ToplevelManager.activeToplevel
+  // Wayland foreign-toplevel focus is global; map it onto Hyprland so this
+  // per-monitor bar instance can keep the title on the output that owns it.
+  readonly property var activeWayland: ToplevelManager.activeToplevel
+  readonly property var barWindow: QsWindow.window
+  readonly property var barScreen: barWindow ? barWindow.screen : null
+  readonly property string barScreenName: barScreen ? String(barScreen.name || "") : ""
+
+  function hyprlandToplevelFor(waylandToplevel) {
+    if (!waylandToplevel) return null
+
+    var values = Hyprland.toplevels.values
+    for (var i = 0; i < values.length; i++) {
+      if (values[i].wayland === waylandToplevel) return values[i]
+    }
+
+    return null
+  }
+
+  readonly property var hyprlandToplevel: hyprlandToplevelFor(activeWayland)
+  readonly property var activeMonitor: hyprlandToplevel ? hyprlandToplevel.monitor : null
+  readonly property string activeMonitorName: activeMonitor ? String(activeMonitor.name || "") : ""
+  // Missing Hyprland match or null monitor: hide rather than mirror globally.
+  readonly property bool onThisScreen: barScreenName !== "" && activeMonitorName !== "" && barScreenName === activeMonitorName
+  readonly property var toplevel: onThisScreen ? activeWayland : null
+
   readonly property string appId: toplevel ? String(toplevel.appId || "") : ""
   readonly property string title: toplevel ? String(toplevel.title || "") : ""
 
@@ -52,7 +76,7 @@ BarWidget {
     return name + " | " + t
   }
 
-  visible: (title !== "" || appName !== "") && !vertical
+  visible: (title !== "" || appName !== "") && !vertical && onThisScreen
   implicitWidth: visible ? Style.space(4) + (appIcon.status === Image.Ready ? iconSize + Style.space(6) : 0) + Math.min(maxLabelWidth, measureText.implicitWidth) + Style.space(8) : 0
   implicitHeight: barSize
 
